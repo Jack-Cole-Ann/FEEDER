@@ -1,0 +1,318 @@
+package com.mycompany.feeder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import com.toedter.calendar.JDateChooser;
+
+public class Feeder extends JFrame {
+    private final JTextField employeeNumberField;
+    private final JDateChooser startDateChooser; // Use JDateChooser for start date
+    private final JDateChooser endDateChooser; // Use JDateChooser for end date
+    private final JTextArea payslipTextArea;
+
+    private static final double sss = 1125;
+    private static final double philhealth = 375;
+    private static final double pagibig = 100;
+    private static double taxRate;
+
+    public Feeder() {
+        setTitle("Payslip Generator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(900, 700)); // Adjusted preferred size
+
+        // Set the background color for the content pane to dark grey
+        getContentPane().setBackground(new Color(50, 50, 50));
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(50, 50, 50)); // Set background color to dark grey
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Center the content horizontally
+        topPanel.setBackground(Color.BLACK); // Set background color to black
+
+        JLabel employeeNumberLabel = new JLabel("Enter Employee Number:");
+        employeeNumberLabel.setForeground(Color.YELLOW); // Set text color to yellow
+        employeeNumberLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+
+        employeeNumberField = new JTextField(30);
+        employeeNumberField.setFont(new Font("Arial", Font.BOLD, 16)); // Set font and size
+        employeeNumberField.setHorizontalAlignment(JTextField.CENTER); // Set text alignment to center
+        employeeNumberField.setForeground(Color.BLUE); // Set text color to blue
+
+        topPanel.add(employeeNumberLabel);
+        topPanel.add(employeeNumberField);
+
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Center the content horizontally
+        datePanel.setBackground(Color.BLACK); // Set background color to black
+
+        JLabel startDateLabel = new JLabel("Start Date:");
+        startDateLabel.setForeground(Color.YELLOW); // Set text color to yellow
+        startDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+
+        startDateChooser = new JDateChooser(); // Initialize JDateChooser
+        startDateChooser.setDateFormatString("yyyy-MM-dd"); // Set date format
+        startDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
+        startDateChooser.setForeground(Color.BLUE); // Set text color to blue
+
+        JLabel endDateLabel = new JLabel("End Date:");
+        endDateLabel.setForeground(Color.YELLOW); // Set text color to yellow
+        endDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+
+        endDateChooser = new JDateChooser(); // Initialize JDateChooser
+        endDateChooser.setDateFormatString("yyyy-MM-dd"); // Set date format
+        endDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
+        endDateChooser.setForeground(Color.BLUE); // Set text color to blue
+
+        datePanel.add(startDateLabel);
+        datePanel.add(startDateChooser);
+        datePanel.add(endDateLabel);
+        datePanel.add(endDateChooser);
+
+        topPanel.add(datePanel);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+
+        payslipTextArea = new JTextArea();
+        payslipTextArea.setEditable(false);
+        payslipTextArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
+        payslipTextArea.setForeground(Color.WHITE); // Set text color to white
+        payslipTextArea.setBackground(Color.BLACK); // Set background color to black
+        JScrollPane scrollPane = new JScrollPane(payslipTextArea);
+        scrollPane.setPreferredSize(new Dimension(850, 500)); // Set preferred size for the JScrollPane
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        JButton generateButton = new JButton("Generate Payslip");
+        generateButton.addActionListener((ActionEvent e) -> {
+            generatePayslip();
+        });
+        datePanel.add(generateButton); // Add the button to the datePanel
+
+        panel.add(generateButton, BorderLayout.SOUTH);
+
+        add(panel);
+
+        pack();
+        setLocationRelativeTo(null);
+
+        startDateChooser.setDate(new Date());
+        endDateChooser.setDate(new Date());
+
+        setVisible(true);
+    }
+
+
+private void generatePayslip() {
+    String employeeNumber = employeeNumberField.getText();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Updated date format without time
+    String startDateString = dateFormat.format(startDateChooser.getDate()); // Get start date string
+    String endDateString = dateFormat.format(endDateChooser.getDate()); // Get end date string
+
+    long totalMillisecondsWorked = calculateTotalMillisecondsWorked(employeeNumber, startDateString, endDateString);
+    long totalMinutesWorked = totalMillisecondsWorked / (1000 * 60); // Convert milliseconds to minutes
+
+    long hoursWorked = totalMinutesWorked / 60; // Extract hours
+    long remainingMinutes = totalMinutesWorked % 60; // Extract remaining minutes
+
+    double totalHoursWorked = hoursWorked + ((double) remainingMinutes / 60); // Total hours worked as a decimal
+
+    // Adjust total hours worked if it's not more than 8 hours and 10 minutes
+    if (totalHoursWorked <= 8.1667) { // 8.1667 hours is equivalent to 8 hours and 10 minutes
+        totalHoursWorked = 9; // If less than or equal to 8 hours and 10 minutes, consider as 9 hours
+    }
+
+    String totalHoursWorkedString = String.format("%.2f", totalHoursWorked); // Convert total hours worked to a formatted string with two decimal places
+
+    String[] payslipData = getPayslipData(employeeNumber);
+
+    if (payslipData != null) {
+        String firstName = payslipData[0];
+        String lastName = payslipData[1];
+        String position = payslipData[2];
+        String birthDay = payslipData[3];
+        double monthlyRate = Double.parseDouble(payslipData[4]);
+        double riceSubsidy = Double.parseDouble(payslipData[5]);
+        double phoneAllowance = Double.parseDouble(payslipData[6]);
+        double clothingAllowance = Double.parseDouble(payslipData[7]);
+        double dailyRate = Double.parseDouble(payslipData[8]); // Daily rate from CSV file
+
+        salaryDeductions(monthlyRate); // Deduct SSS, Philhealth, and Pagibig from monthly rate
+
+        double grossIncome;
+
+        // Apply hourly rate when tardiness is greater than or equal to 10 minutes
+        if (calculateTardiness(employeeNumber, startDateString, endDateString) > 10) {
+            grossIncome = totalHoursWorked * dailyRate; // Calculate hourly rate and multiply by total hours worked
+        } else {
+            grossIncome =  9 * dailyRate; // Consider 9 hours per day and multiply by daily rate
+        }
+
+        // Calculate total of Rice Subsidy, Phone Allowance, and Clothing Allowance
+        double totalAllowances = riceSubsidy + phoneAllowance + clothingAllowance;
+
+        StringBuilder payslipText = new StringBuilder();
+        payslipText.append("MotorPH\n");
+        payslipText.append("Employee Payslip\n");
+        payslipText.append("Employee Details \n");
+        payslipText.append("Employee Number: ").append(employeeNumber).append("\n"); // Add employee number
+        payslipText.append("First Name: ").append(firstName).append("\n");
+        payslipText.append("Last Name: ").append(lastName).append("\n");
+        payslipText.append("Birthday: ").append(birthDay).append("\n");
+        payslipText.append("Position: ").append(position).append("\n");
+        payslipText.append("\n Earnings \n ");
+        payslipText.append("Monthly Rate: ").append(monthlyRate).append("\n");
+        payslipText.append("Hourly Rate: ").append(dailyRate).append("\n");
+        payslipText.append("Selected start date: ").append(startDateString).append("\n"); // Add start date
+        payslipText.append("Selected end date: ").append(endDateString).append("\n"); // Add end date
+        payslipText.append("Total hours worked: ").append(totalHoursWorkedString).append("\n"); // Add total hours worked
+        payslipText.append("\n Benefits \n");
+        payslipText.append("Rice Subsidy: ").append(riceSubsidy).append("\n");
+        payslipText.append("Phone Allowance: ").append(phoneAllowance).append("\n");
+        payslipText.append("Clothing Allowance: ").append(clothingAllowance).append("\n");
+        payslipText.append("Total Allowances: ").append(totalAllowances).append("\n"); // Display total allowances
+        payslipText.append(" \n Deductions \n");
+        payslipText.append("SSS: ").append(sss).append("\n");
+        payslipText.append("Philhealth: ").append(philhealth).append("\n");
+        payslipText.append("Pagibig: ").append(pagibig).append("\n");
+        payslipText.append("Tax: ").append(taxRate).append("\n");
+        payslipText.append(" \n Summary \n ");
+        payslipText.append("Gross Income: ").append(String.format("%.2f", grossIncome)).append("\n"); // Add gross income with two decimal places
+        payslipText.append("Benefits: ").append(totalAllowances).append("\n"); // Display total allowances
+        payslipTextArea.setText(payslipText.toString());
+    } else {
+        payslipTextArea.setText("Employee not found");
+    }
+}
+
+
+
+    private void salaryDeductions(double monthlyRate) {
+        monthlyRate -= (sss + philhealth + pagibig);
+        taxCalculation(monthlyRate);
+    }
+
+    private void taxCalculation(double monthlyRate) {
+        if (monthlyRate < 20832) taxRate = 0;
+        else if (20832 < monthlyRate && monthlyRate < 33333) taxRate = (monthlyRate - 20832) * (0.20);
+        else if (33333 < monthlyRate && monthlyRate < 66667) taxRate = (monthlyRate - 33333) * (0.25) + 2500;
+        else if (66667 < monthlyRate && monthlyRate < 166667) taxRate = (monthlyRate - 66667) * (0.30) + 10833;
+        else if (166667 < monthlyRate && monthlyRate < 666667) taxRate = (monthlyRate - 166667) * (0.32) + 40833.33;
+        else if (monthlyRate > 666667) taxRate = (monthlyRate - 666667) * (0.35) + 200833.33;
+
+        monthlyRate -= taxRate;
+    }
+
+    private String[] getPayslipData(String employeeNumber) {
+        String csvFilePath = "employees.csv"; // Path to your CSV file
+        String line;
+        String[] payslipData = null;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
+            while ((line = br.readLine()) != null) {
+                String[] employee = line.split(",");
+                if (employee[0].equals(employeeNumber)) {
+                    payslipData = new String[]{
+                            employee[1], // First Name
+                            employee[2], // Last Name
+                            employee[3], // birthday
+                            employee[4], // position
+                            employee[5], // Monthly Rate
+                            employee[6], // Rice Subsidy
+                            employee[7], // Phone Allowance
+                            employee[8], // Clothing Allowance
+                            employee[9]  // Daily Rate
+                    };
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return payslipData;
+    }
+
+    private double calculatePay(double monthlyRate, double riceSubsidy, double phoneAllowance, double clothingAllowance) {
+        return monthlyRate + riceSubsidy + phoneAllowance + clothingAllowance;
+    }
+
+private long calculateTotalMillisecondsWorked(String employeeNumber, String startDateString, String endDateString) {
+    String csvFilePath = "attendance.csv"; // Path to your CSV file
+    String line;
+    long totalMilliseconds = 0;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
+        while ((line = br.readLine()) != null) {
+            String[] attendance = line.split(",");
+            String empNumber = attendance[0];
+            String date = attendance[1];
+            String timeIn = attendance[2]; // Fetch timein
+            String timeOut = attendance[3]; // Fetch timeout
+            
+            // Check if the current line corresponds to the provided employee number and falls within the provided date range
+            if (empNumber.equals(employeeNumber) && date.compareTo(startDateString) >= 0 && date.compareTo(endDateString) <= 0) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Date startTime = dateFormat.parse(date + " " + timeIn); // Combine date and timein
+                Date endTime = dateFormat.parse(date + " " + timeOut); // Combine date and timeout
+
+                totalMilliseconds += endTime.getTime() - startTime.getTime();
+            }
+        }
+    } catch (IOException | ParseException e) {
+        e.printStackTrace();
+    }
+
+    return totalMilliseconds;
+}
+
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Feeder().setVisible(true);
+            }
+        });
+    }
+
+    private long calculateTardiness(String employeeNumber, String startDateString, String endDateString) {
+    String csvFilePath = "attendance.csv"; // Path to your CSV file
+    String line;
+    long totalTardiness = 0;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
+        while ((line = br.readLine()) != null) {
+            String[] attendance = line.split(",");
+            String empNumber = attendance[0];
+            String date = attendance[1];
+            String timeIn = attendance[2]; // Fetch timein
+            
+            // Check if the current line corresponds to the provided employee number and falls within the provided date range
+            if (empNumber.equals(employeeNumber) && date.compareTo(startDateString) >= 0 && date.compareTo(endDateString) <= 0) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                Date averageTimeIn = dateFormat.parse("08:00"); // Assuming average time in is 08:00 for example
+
+                // Parse the timeIn string to Date
+                Date timeInDate = dateFormat.parse(timeIn);
+
+                // Check if timeIn is less than averageTimeIn
+                if (timeInDate.before(averageTimeIn)) {
+                    long tardiness = averageTimeIn.getTime() - timeInDate.getTime();
+                    totalTardiness += tardiness;
+                }
+            }
+        }
+    } catch (IOException | ParseException e) {
+        e.printStackTrace();
+    }
+
+    return totalTardiness;
+}
+
+}
