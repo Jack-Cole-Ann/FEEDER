@@ -155,6 +155,12 @@ private void generatePayslip() {
         // Calculate total of Rice Subsidy, Phone Allowance, and Clothing Allowance
         double totalAllowances = riceSubsidy + phoneAllowance + clothingAllowance;
 
+        // Calculate total deductions
+        double totalDeductions = sss + philhealth + pagibig + taxRate;
+
+        // Calculate net pay
+        double netPay = (grossIncome + totalAllowances) - totalDeductions;
+
         StringBuilder payslipText = new StringBuilder();
         payslipText.append("MotorPH\n");
         payslipText.append("Employee Payslip\n");
@@ -180,14 +186,20 @@ private void generatePayslip() {
         payslipText.append("Philhealth: ").append(philhealth).append("\n");
         payslipText.append("Pagibig: ").append(pagibig).append("\n");
         payslipText.append("Tax: ").append(taxRate).append("\n");
+        payslipText.append("Total Deductions: ").append(String.format("%.2f", totalDeductions)).append("\n"); // Add total deductions
         payslipText.append(" \n Summary \n ");
         payslipText.append("Gross Income: ").append(String.format("%.2f", grossIncome)).append("\n"); // Add gross income with two decimal places
         payslipText.append("Benefits: ").append(totalAllowances).append("\n"); // Display total allowances
+          payslipText.append("Deductions: ").append(totalDeductions).append("\n"); // Display total allowances
+        payslipText.append("Net Pay: ").append(String.format("%.2f", netPay)).append("\n"); // Add net pay
         payslipTextArea.setText(payslipText.toString());
     } else {
         payslipTextArea.setText("Employee not found");
     }
 }
+
+
+
 
 
 
