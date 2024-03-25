@@ -27,14 +27,14 @@ public class Feeder extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(900, 700)); // Adjusted preferred size
 
-        // Set the background color for the content pane to dark grey
+       
         getContentPane().setBackground(new Color(50, 50, 50));
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(50, 50, 50)); // Set background color to dark grey
+        panel.setBackground(new Color(50, 50, 50)); 
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Center the content horizontally
-        topPanel.setBackground(Color.BLACK); // Set background color to black
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); 
+        topPanel.setBackground(Color.BLACK); 
 
         JLabel employeeNumberLabel = new JLabel("Enter Employee Number:");
         employeeNumberLabel.setForeground(Color.YELLOW); // Set text color to yellow
@@ -48,26 +48,26 @@ public class Feeder extends JFrame {
         topPanel.add(employeeNumberLabel);
         topPanel.add(employeeNumberField);
 
-        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Center the content horizontally
-        datePanel.setBackground(Color.BLACK); // Set background color to black
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); 
+        datePanel.setBackground(Color.BLACK); 
 
         JLabel startDateLabel = new JLabel("Start Date:");
-        startDateLabel.setForeground(Color.YELLOW); // Set text color to yellow
-        startDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+        startDateLabel.setForeground(Color.YELLOW); 
+        startDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); 
 
-        startDateChooser = new JDateChooser(); // Initialize JDateChooser
-        startDateChooser.setDateFormatString("yyyy-MM-dd"); // Set date format
-        startDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
-        startDateChooser.setForeground(Color.BLUE); // Set text color to blue
+        startDateChooser = new JDateChooser();
+        startDateChooser.setDateFormatString("yyyy-MM-dd"); 
+        startDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); 
+        startDateChooser.setForeground(Color.BLUE); 
 
         JLabel endDateLabel = new JLabel("End Date:");
-        endDateLabel.setForeground(Color.YELLOW); // Set text color to yellow
-        endDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+        endDateLabel.setForeground(Color.YELLOW); 
+        endDateLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); 
 
-        endDateChooser = new JDateChooser(); // Initialize JDateChooser
-        endDateChooser.setDateFormatString("yyyy-MM-dd"); // Set date format
-        endDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
-        endDateChooser.setForeground(Color.BLUE); // Set text color to blue
+        endDateChooser = new JDateChooser(); 
+        endDateChooser.setDateFormatString("yyyy-MM-dd");
+        endDateChooser.setFont(new Font("Arial", Font.PLAIN, 16)); 
+        endDateChooser.setForeground(Color.BLUE);
 
         datePanel.add(startDateLabel);
         datePanel.add(startDateChooser);
@@ -80,18 +80,18 @@ public class Feeder extends JFrame {
 
         payslipTextArea = new JTextArea();
         payslipTextArea.setEditable(false);
-        payslipTextArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font and size
-        payslipTextArea.setForeground(Color.WHITE); // Set text color to white
-        payslipTextArea.setBackground(Color.BLACK); // Set background color to black
+        payslipTextArea.setFont(new Font("Arial", Font.PLAIN, 16)); 
+        payslipTextArea.setForeground(Color.WHITE); 
+        payslipTextArea.setBackground(Color.BLACK); 
         JScrollPane scrollPane = new JScrollPane(payslipTextArea);
-        scrollPane.setPreferredSize(new Dimension(850, 500)); // Set preferred size for the JScrollPane
+        scrollPane.setPreferredSize(new Dimension(850, 500)); 
         panel.add(scrollPane, BorderLayout.CENTER);
 
         JButton generateButton = new JButton("Generate Payslip");
         generateButton.addActionListener((ActionEvent e) -> {
             generatePayslip();
         });
-        datePanel.add(generateButton); // Add the button to the datePanel
+        datePanel.add(generateButton); 
 
         panel.add(generateButton, BorderLayout.SOUTH);
 
@@ -109,7 +109,7 @@ public class Feeder extends JFrame {
 
 private void generatePayslip() {
     String employeeNumber = employeeNumberField.getText();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Updated date format without time
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
     String startDateString = dateFormat.format(startDateChooser.getDate()); // Get start date string
     String endDateString = dateFormat.format(endDateChooser.getDate()); // Get end date string
 
@@ -119,7 +119,7 @@ private void generatePayslip() {
     long hoursWorked = totalMinutesWorked / 60; // Extract hours
     long remainingMinutes = totalMinutesWorked % 60; // Extract remaining minutes
 
-    double totalHoursWorked = hoursWorked + ((double) remainingMinutes / 60); // Total hours worked as a decimal
+    double totalHoursWorked = hoursWorked + ((double) remainingMinutes / 60); 
 
     // Adjust total hours worked if it's not more than 8 hours and 10 minutes
     if (totalHoursWorked <= 8.1667) { // 8.1667 hours is equivalent to 8 hours and 10 minutes
