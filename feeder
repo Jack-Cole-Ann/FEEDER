@@ -25,7 +25,7 @@ public class Feeder extends JFrame {
     public Feeder() {
         setTitle("Payslip Generator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(900, 700)); // Adjusted preferred size
+        setPreferredSize(new Dimension(900, 700)); 
 
        
         getContentPane().setBackground(new Color(50, 50, 50));
@@ -38,12 +38,12 @@ public class Feeder extends JFrame {
 
         JLabel employeeNumberLabel = new JLabel("Enter Employee Number:");
         employeeNumberLabel.setForeground(Color.YELLOW); // Set text color to yellow
-        employeeNumberLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); // Set font and size
+        employeeNumberLabel.setFont(new Font("Lucida Console", Font.BOLD, 18)); 
 
         employeeNumberField = new JTextField(30);
-        employeeNumberField.setFont(new Font("Arial", Font.BOLD, 16)); // Set font and size
-        employeeNumberField.setHorizontalAlignment(JTextField.CENTER); // Set text alignment to center
-        employeeNumberField.setForeground(Color.BLUE); // Set text color to blue
+        employeeNumberField.setFont(new Font("Arial", Font.BOLD, 16)); 
+        employeeNumberField.setHorizontalAlignment(JTextField.CENTER); 
+        employeeNumberField.setForeground(Color.BLUE); 
 
         topPanel.add(employeeNumberLabel);
         topPanel.add(employeeNumberField);
@@ -114,7 +114,7 @@ private void generatePayslip() {
     String endDateString = dateFormat.format(endDateChooser.getDate()); // Get end date string
 
     long totalMillisecondsWorked = calculateTotalMillisecondsWorked(employeeNumber, startDateString, endDateString);
-    long totalMinutesWorked = totalMillisecondsWorked / (1000 * 60); // Convert milliseconds to minutes
+    long totalMinutesWorked = totalMillisecondsWorked / (1000 * 60); 
 
     long hoursWorked = totalMinutesWorked / 60; // Extract hours
     long remainingMinutes = totalMinutesWorked % 60; // Extract remaining minutes
@@ -165,7 +165,7 @@ private void generatePayslip() {
         payslipText.append("MotorPH\n");
         payslipText.append("Employee Payslip\n");
         payslipText.append("Employee Details \n");
-        payslipText.append("Employee Number: ").append(employeeNumber).append("\n"); // Add employee number
+        payslipText.append("Employee Number: ").append(employeeNumber).append("\n"); 
         payslipText.append("First Name: ").append(firstName).append("\n");
         payslipText.append("Last Name: ").append(lastName).append("\n");
         payslipText.append("Birthday: ").append(birthDay).append("\n");
@@ -173,25 +173,25 @@ private void generatePayslip() {
         payslipText.append("\n Earnings \n ");
         payslipText.append("Monthly Rate: ").append(monthlyRate).append("\n");
         payslipText.append("Hourly Rate: ").append(dailyRate).append("\n");
-        payslipText.append("Selected start date: ").append(startDateString).append("\n"); // Add start date
-        payslipText.append("Selected end date: ").append(endDateString).append("\n"); // Add end date
-        payslipText.append("Total hours worked: ").append(totalHoursWorkedString).append("\n"); // Add total hours worked
+        payslipText.append("Selected start date: ").append(startDateString).append("\n"); 
+        payslipText.append("Selected end date: ").append(endDateString).append("\n"); 
+        payslipText.append("Total hours worked: ").append(totalHoursWorkedString).append("\n"); 
         payslipText.append("\n Benefits \n");
         payslipText.append("Rice Subsidy: ").append(riceSubsidy).append("\n");
         payslipText.append("Phone Allowance: ").append(phoneAllowance).append("\n");
         payslipText.append("Clothing Allowance: ").append(clothingAllowance).append("\n");
-        payslipText.append("Total Allowances: ").append(totalAllowances).append("\n"); // Display total allowances
+        payslipText.append("Total Allowances: ").append(totalAllowances).append("\n"); 
         payslipText.append(" \n Deductions \n");
         payslipText.append("SSS: ").append(sss).append("\n");
         payslipText.append("Philhealth: ").append(philhealth).append("\n");
         payslipText.append("Pagibig: ").append(pagibig).append("\n");
         payslipText.append("Tax: ").append(taxRate).append("\n");
-        payslipText.append("Total Deductions: ").append(String.format("%.2f", totalDeductions)).append("\n"); // Add total deductions
+        payslipText.append("Total Deductions: ").append(String.format("%.2f", totalDeductions)).append("\n"); 
         payslipText.append(" \n Summary \n ");
-        payslipText.append("Gross Income: ").append(String.format("%.2f", grossIncome)).append("\n"); // Add gross income with two decimal places
-        payslipText.append("Benefits: ").append(totalAllowances).append("\n"); // Display total allowances
-          payslipText.append("Deductions: ").append(totalDeductions).append("\n"); // Display total allowances
-        payslipText.append("Net Pay: ").append(String.format("%.2f", netPay)).append("\n"); // Add net pay
+        payslipText.append("Gross Income: ").append(String.format("%.2f", grossIncome)).append("\n");
+        payslipText.append("Benefits: ").append(totalAllowances).append("\n"); 
+          payslipText.append("Deductions: ").append(totalDeductions).append("\n");
+        payslipText.append("Net Pay: ").append(String.format("%.2f", netPay)).append("\n"); 
         payslipTextArea.setText(payslipText.toString());
     } else {
         payslipTextArea.setText("Employee not found");
@@ -220,7 +220,7 @@ private void generatePayslip() {
     }
 
     private String[] getPayslipData(String employeeNumber) {
-        String csvFilePath = "employees.csv"; // Path to your CSV file
+        String csvFilePath = "employees.csv"; 
         String line;
         String[] payslipData = null;
 
@@ -303,7 +303,7 @@ private long calculateTotalMillisecondsWorked(String employeeNumber, String star
             String[] attendance = line.split(",");
             String empNumber = attendance[0];
             String date = attendance[1];
-            String timeIn = attendance[2]; // Fetch timein
+            String timeIn = attendance[2]; 
             
             // Check if the current line corresponds to the provided employee number and falls within the provided date range
             if (empNumber.equals(employeeNumber) && date.compareTo(startDateString) >= 0 && date.compareTo(endDateString) <= 0) {
